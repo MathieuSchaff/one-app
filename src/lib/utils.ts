@@ -1,3 +1,6 @@
-export const cn = (...classNames: string[]) => {
-  return classNames.join(' ').trim();
+import clsx from "clsx";
+import { ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+export const cn = (...classNames: ClassValue[]) => {
+  return twMerge(clsx(classNames));
 }
