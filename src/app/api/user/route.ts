@@ -2,20 +2,34 @@
 import { NextResponse } from "next/server";
 import * as bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
+import * as z from "zod";
 interface RequestBody {
   email: string;
+  username: string;
   password: string;
 }
+const userSchema = z.object({
+  username: z.string().min(2, {
+    message: "username must be at least 2 characters.",
+  }).max(20, {
+    message: "username must be at most 20 characters.",
+  }),
+  email: z.string().min(2, {
+    message: "email must be at least 2 characters.",
+  }).email().max(20, {
+    message: "email must be at most 20 characters.",
+  }),
+  password: z.string().min(2, {
+    message: "password must be at least 2 characters.",
+  }),
+})
 export async function POST(request: Request) {
   console.log("in user route", request);
   try {
     const body: RequestBody = await request.json();
-    // Validate email and password
-    if (!body.email || !body.password) {
-      return NextResponse.json({ error: 'Email and password are required' }, { status: 500 })
-    }
+    const { email, username, password } = userSchema.parse(body);
     const existingUser = await prisma.user.findUnique({
-      where: { email: body?.email },
+      where: { email },
     }
     );
     if (existingUser) {
@@ -23,12 +37,13 @@ export async function POST(request: Request) {
     }
     const user = await prisma.user.create({
       data: {
-        email: body?.email,
+        email,
+        username,
         password: await bcrypt.hash(body?.password, 10),
       },
     });
-    const { password, ...result } = user;
-    return NextResponse.json(result);
+    const { password: userPassword, ...result } = user;
+    return NextResponse.json(result, { status: 201 });
 
   } catch (error) {
     console.log(error);
