@@ -4,6 +4,7 @@ import './globals.css'
 import { cn } from '@/lib/utils'
 import Providers from "@/components/auth/Providers"
 import Header from '@/components/Header'
+import { Toaster } from '@/components/ui/toaster'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -21,10 +22,11 @@ export default function RootLayout({
       <body className={cn("min-h-screen flex flex-col font-sans antialiased grainy",
         inter.className
       )}>
-        <Header />
-        {/* <Providers> */}
-        {children}
-        {/* </Providers> */}
+        <Providers>
+          <Header />
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   )
