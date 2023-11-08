@@ -24,7 +24,6 @@ const userSchema = z.object({
   }),
 })
 export async function POST(request: Request) {
-  console.log("in user route", request);
   try {
     const body: RequestBody = await request.json();
     const { email, username, password } = userSchema.parse(body);
@@ -46,7 +45,6 @@ export async function POST(request: Request) {
     return NextResponse.json(result, { status: 201 });
 
   } catch (error) {
-    console.log(error);
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }
