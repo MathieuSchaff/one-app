@@ -1,12 +1,18 @@
 import Link from "next/link"
 import { buttonVariants } from "./ui/button"
-
-export const AuthComponent = () => {
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { LogoutBtn } from "./LogoutBtn"
+export const AuthComponent = async () => {
+  const session = await getServerSession(authOptions)
   return (
     <div className="flex gap-4">
-      <LoginBtn />
-      <SignupBtn />
-      {/* <LogoutBtn /> */}
+      {session?.user ? <LogoutBtn /> :
+        <>
+          <SignupBtn />
+          <LoginBtn />
+        </>
+      }
     </div>
   )
 }
@@ -15,18 +21,9 @@ const LoginBtn = () => {
     <Link href='/sign-in' className={buttonVariants({
       size: 'sm',
       variant: 'secondary'
-    })} >
+    })}>
       Login
     </Link>
-  )
-
-}
-const LogoutBtn = () => {
-  return (
-    <Link href="/logout" className={buttonVariants({
-      size: 'lg',
-      variant: 'secondary'
-    })}>Logout</Link>
   )
 }
 const SignupBtn = () => {
@@ -34,6 +31,8 @@ const SignupBtn = () => {
     <Link href="/sign-up" className={buttonVariants({
       size: 'sm',
       variant: 'secondary'
-    })}>Signup</Link>
+    })}>
+      Signup
+    </Link>
   )
 }

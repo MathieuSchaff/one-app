@@ -11,7 +11,6 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: "jwt",
-
   },
   providers: [
     CredentialsProvider({
@@ -29,20 +28,42 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           return null
         }
-        const res = await fetch("/api/login", {
+        const res = await fetch("http://localhost:3000/api/login", {
           method: 'POST',
           body: JSON.stringify(credentials),
           headers: { "Content-Type": "application/json" }
         })
-        const user = await res.json()
-
+        console.log("res in authorize ", res)
         // If no error and we have user data, return it
-        if (res.ok && user) {
+        if (res.ok) {
+          const user = await res.json()
           return user
         }
         // Return null if user data could not be retrieved
         return null
       }
     })
-  ]
+  ],
+  callbacks: {
+    async session({ session, token }) {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          username: token.username
+        }
+      }
+      // return session
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        return {
+          ...token,
+          username: user.username
+        }
+
+      }
+      return token
+    }
+  }
 }
