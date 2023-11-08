@@ -1,5 +1,5 @@
 "use client"
-
+import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useToast } from "../ui/use-toast"
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "username must be at least 2 characters.",
@@ -29,7 +31,6 @@ const formSchema = z.object({
   password: z.string().min(2, {
     message: "password must be at least 2 characters.",
   }),
-
   confirmPassword: z.string().min(2, {
     message: "password must be at least 2 characters.",
   }),
@@ -38,8 +39,9 @@ const formSchema = z.object({
   path: ["confirmPassword"],
 })
 export const SignUpForm = () => {
-
-
+  const { toast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,10 +50,43 @@ export const SignUpForm = () => {
       password: "",
     },
   })
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true)
+    try {
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+      const response = await fetch('/api/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      })
+      if (response.ok) {
+        router.push('/sign-in')
+      } else {
+        throw new Error('Something went wrong!')
+      }
+
+    } catch (err: unknown) {
+      console.log(err)
+      if (err instanceof Error) {
+        toast({
+          title: "Error signing in",
+          description: err.message,
+          variant: "destructive"
+        })
+      } else {
+        toast({
+          title: "Error signing in",
+          description: "Something went wrong! Please try again.",
+          variant: "destructive"
+        })
+      }
+    } finally {
+      setIsLoading(false)
+    }
+
+
   }
   return (
     <Form {...form}>
