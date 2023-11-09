@@ -6,6 +6,7 @@ import Providers from "@/components/auth/Providers"
 import Header from '@/components/Header'
 import { Toaster } from '@/components/ui/toaster'
 import { ThemeProvider } from '@/components/providers/theme-provider'
+import { NavigationMenuDemo } from '@/components/NavBar'
 // const inter = Inter({ subsets: ['latin'] })
 const poppins = Poppins(
   {
@@ -36,14 +37,18 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className='light' suppressHydrationWarning>
+    <html lang="en"
+      // className='light'
+      suppressHydrationWarning>
       <body className={cn("min-h-screen flex flex-col font-sans antialiased grainy",
         poppins.className
       )}>
         <ThemeProvider
           attribute='class'
-          defaultTheme='system'
+          defaultTheme='dark'
+          enableSystem={false}
           disableTransitionOnChange
+          storageKey='one-app-theme'
         >
           <Providers>
             <Header />
