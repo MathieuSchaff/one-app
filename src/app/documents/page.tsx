@@ -1,20 +1,27 @@
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 export default async function Documents() {
   const session = await getServerSession(authOptions)
   console.log(session)
   return (
     <div>
-      {session && JSON.stringify(session)}
-      <h1>Documents</h1>
-      {/* {session && */}
-      {/*   <p> */}
-      {/*     You are currently signed in as <strong>{session.user.email}</strong>. */}
-      {/*   </p>} */}
-      <p>
-        This is the documents page. You can access this page at{" "}
-        <code>/documents</code>.
-      </p>
+      <Select>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Location" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="on-site">On site</SelectItem>
+          <SelectItem value="remote">Remote</SelectItem>
+          <SelectItem value="hybrid">Hybrid</SelectItem>
+        </SelectContent>
+      </Select>
     </div>);
 }
